@@ -1,6 +1,3 @@
-import OpenAI from "openai";
-const openai = new OpenAI(api_key=OPENAI_API_KEY, base_url="https://generativelanguage.googleapis.com/v1beta/openai/");
-
 document.addEventListener("DOMContentLoaded", () => {
   const inputField = document.getElementById("input");
   inputField.addEventListener("keydown", (e) => {
@@ -12,32 +9,59 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-async function output(input) {
-  // Clean up input similar to before
-  let text = input.toLowerCase().replace(/[^\w\s]/gi, "").trim();
+function output(input) {
+  let product;
 
-  try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "developer",
-          content: "You are a friendly and helpful chatbot assistant. Keep responses concise and engaging."
-        },
-        {
-          role: "user",
-          content: text
-        }
-      ],
-      store: true,
-    });
+  // Regex remove non word/space chars
+  // Trim trailing whitespce
+  // Remove digits - not sure if this is best
+  // But solves problem of entering something like 'hi1'
 
-    const response = completion.choices[0].message.content;
-    addChat(input, response);
-  } catch (error) {
-    console.error("Error calling OpenAI API:", error);
-    addChat(input, "Sorry, I'm having trouble connecting right now.");
+  let text = input.toLowerCase().replace(/[^\w\s]/gi, "").replace(/[\d]/gi, "").trim();
+  text = text
+    .replace(/ a /g, " ")   // 'tell me a story' -> 'tell me story'
+    .replace(/i feel /g, "")
+    .replace(/whats/g, "what is")
+    .replace(/please /g, "")
+    .replace(/ please/g, "")
+    .replace(/r u/g, "are you");
+
+  if (compare(prompts, replies, text)) { 
+    // Search for exact match in `prompts`
+    product = compare(prompts, replies, text);
+  } else if (text.match(/thank/gi)) {
+    product = "You're welcome!"
+  } else if (text.match(/(corona|covid|virus)/gi)) {
+    // If no match, check if message contains `coronavirus`
+    product = coronavirus[Math.floor(Math.random() * coronavirus.length)];
+  } else {
+    // If all else fails: random alternative
+    product = alternative[Math.floor(Math.random() * alternative.length)];
   }
+
+  // Update DOM
+  addChat(input, product);
+}
+
+function compare(promptsArray, repliesArray, string) {
+  let reply;
+  let replyFound = false;
+  for (let x = 0; x < promptsArray.length; x++) {
+    for (let y = 0; y < promptsArray[x].length; y++) {
+      if (promptsArray[x][y] === string) {
+        let replies = repliesArray[x];
+        reply = replies[Math.floor(Math.random() * replies.length)];
+        replyFound = true;
+        // Stop inner loop when input value matches prompts
+        break;
+      }
+    }
+    if (replyFound) {
+      // Stop outer loop when reply is found instead of interating through the entire array
+      break;
+    }
+  }
+  return reply;
 }
 
 function addChat(input, product) {
