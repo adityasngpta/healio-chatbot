@@ -44,12 +44,10 @@ async function getGeminiResponse(input) {
 }
 
 async function output(input) {
-  // Create both user and bot chat messages;
   const botText = addChat(input, "Typing...");
-  // Get Gemini response
   const reply = await getGeminiResponse(input);
   botText.innerText = reply;
-  textToSpeech(reply);
+  await textToSpeech(reply);
 }
 
 // Update addChat to return the bot text element.
