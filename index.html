@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-	<title>Chatbot</title>
-	<link rel="icon" href="bot.png" />
-	<link rel="stylesheet" href="style.css" />
+    <title>Healio - Your Mental Health Companion</title>
+    <link rel="icon" href="bot.png" />
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-
 <body>
-	<div id="container" class="container">
-		<div id="chat" class="chat">
-			<div id="messages" class="messages"></div>
-			<input id="input" type="text" placeholder="Say something..." autocomplete="off" autofocus="true" />
-		</div>
-		<img src="bot.png" alt="Robot cartoon" height="500vh">
-	</div>
+    <div class="container">
+        <div class="chat">
+            <div class="chat-header">
+                Healio - Your Supportive Friend
+            </div>
+            <div id="messages" class="messages"></div>
+            <div class="input-container">
+                <input id="input" type="text" 
+                    placeholder="Share what's on your mind... I'm here to listen" 
+                    autocomplete="off" 
+                    autofocus="true" />
+            </div>
+        </div>
+    </div>
+    <script type="module" src="index.js"></script>
+    <script src="speech.js"></script>
 </body>
-<script type="module" src="index.js"></script>
-<script src="speech.js"></script>
-
 </html>
