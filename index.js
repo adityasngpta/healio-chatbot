@@ -2,6 +2,9 @@
 const GEMINI_API_KEY = "AIzaSyDNf5CReEq_USmxByM3RhTQBaBVXuCSgUM";
 const API_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
 
+// Add conversation history array at the top
+const conversationHistory = [];
+
 const SYSTEM_PROMPT = `You are Healio, a supportive and empathetic mental health companion for young people. Your responses should be:
 - Warm and conversational, but professional
 - Non-judgmental and validating of emotions
@@ -16,9 +19,13 @@ If you sense the user is in crisis, always provide these emergency contacts:
 - National Suicide Prevention Lifeline: 1-800-273-8255"`;
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Show welcome message
+  // Add system message to conversation history
+  conversationHistory.push({ role: "system", content: SYSTEM_PROMPT });
+  
+  // Show welcome message and add to history
   const welcome = "Hi, I'm Healio! 👋 I'm here to chat, listen, and support you. How are you feeling today?";
   addChat("", welcome, true);
+  conversationHistory.push({ role: "assistant", content: welcome });
 
   const inputField = document.getElementById("input");
   inputField.addEventListener("keydown", async (e) => {
@@ -30,9 +37,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// Simplified API call using fetch
+// Update getGeminiResponse to include conversation history
 async function getGeminiResponse(input) {
   try {
+    // Add user's message to history
+    conversationHistory.push({ role: "user", content: input });
+
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
@@ -41,10 +51,7 @@ async function getGeminiResponse(input) {
       },
       body: JSON.stringify({
         model: "gemini-2.0-flash",
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: input }
-        ]
+        messages: conversationHistory
       })
     });
 
@@ -53,7 +60,12 @@ async function getGeminiResponse(input) {
     }
 
     const data = await response.json();
-    return data.choices[0].message.content;
+    const reply = data.choices[0].message.content;
+    
+    // Add bot's reply to history
+    conversationHistory.push({ role: "assistant", content: reply });
+    
+    return reply;
   } catch (error) {
     console.error('Error:', error);
     return "Sorry, I'm having trouble connecting right now.";
