@@ -1,44 +1,27 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-	<title>Chatbot</title>
-	<link rel="icon" href="bot.png" />
-	<link rel="stylesheet" href="style.css" />
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Healio - Your Mental Health Companion</title>
+    <link rel="icon" href="bot.png" />
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-
 <body>
-	<div id="container" class="container">
-		<button onclick="toggleDarkMode()" class="theme-toggle">🌙</button>
-		<div id="chat" class="chat">
-			<div class="chat-header">
-				Healio - Your Supportive Friend
-				<button onclick="exportChat()" class="export-button">💾</button>
-			</div>
-			<div id="messages" class="messages"></div>
-			<div class="input-container">
-				<input id="input" type="text" placeholder="Share what's on your mind..." autocomplete="off" autofocus="true" />
-				<button onclick="toggleVoiceInput()" class="voice-input-button">🎤</button>
-			</div>
-			<div class="mood-tracker">
-				<h3>Mood Timeline</h3>
-				<canvas id="mood-chart"></canvas>
-			</div>
-		</div>
-		<div class="resources-panel">
-			<h3>Helpful Resources</h3>
-			<ul>
-				<li><a href="#">Crisis Helpline</a></li>
-				<li><a href="#">Meditation Guide</a></li>
-				<li><a href="#">Self-Care Tips</a></li>
-			</ul>
-		</div>
-		<img src="bot.png" alt="Robot cartoon" height="500vh">
-	</div>
+    <div class="container">
+        <div class="chat">
+            <div class="chat-header">
+                Healio - Your Supportive Friend
+            </div>
+            <div id="messages" class="messages"></div>
+            <div class="input-container">
+                <input id="input" type="text" 
+                    placeholder="Share what's on your mind... I'm here to listen" 
+                    autocomplete="off" 
+                    autofocus="true" />
+            </div>
+        </div>
+    </div>
+    <script type="module" src="index.js"></script>
+    <script src="speech.js"></script>
 </body>
-<script type="text/javascript" src="index.js" ></script>
-<script type="text/javascript" src="constants.js" ></script>
-<script type="text/javascript" src="speech.js" ></script>
-
 </html>
