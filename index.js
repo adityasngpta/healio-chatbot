@@ -1,15 +1,8 @@
-// Initialize conversation history at the top
-const conversationHistory = [];
-const MAX_HISTORY_LENGTH = 20; // Prevent context from growing too large
+// Initialize message history
+let conversationHistory = [];
 
-// Initialize outside function scope
 const GEMINI_API_KEY = "AIzaSyDNf5CReEq_USmxByM3RhTQBaBVXuCSgUM";
-const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro/chat:completionStream";
-
-// Initialize conversation with system prompt
-const initializeConversation = () => {
-  conversationHistory.push({ role: "system", content: SYSTEM_PROMPT });
-};
+const API_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
 
 const SYSTEM_PROMPT = `You are Healio, a supportive and empathetic mental health companion for young people. Your responses should be:
 - Warm and conversational, but professional
@@ -24,13 +17,106 @@ If you sense the user is in crisis, always provide these emergency contacts:
 - Crisis Text Line: Text HOME to 741741
 - National Suicide Prevention Lifeline: 1-800-273-8255"`;
 
-document.addEventListener("DOMContentLoaded", () => {
-  initializeConversation();
+async function* streamResponse(response) {
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
   
-  // Show welcome message and add to history
+  while (true) {
+    const {done, value} = await reader.read();
+    if (done) break;
+    
+    buffer += decoder.decode(value, {stream: true});
+    const lines = buffer.split('\n');
+    buffer = lines.pop();
+    
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const jsonStr = line.slice(5);
+        if (jsonStr.trim() === '[DONE]') continue;
+        try {
+          const jsonData = JSON.parse(jsonStr);
+          if (jsonData.choices?.[0]?.delta?.content) {
+            yield jsonData.choices[0].delta.content;
+          }
+        } catch (e) {
+          console.error('JSON parse error:', e);
+        }
+      }
+    }
+  }
+}
+
+async function getGeminiResponse(input) {
+  try {
+    // Add user message to history
+    conversationHistory.push({
+      role: "user",
+      content: input
+    });
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GEMINI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gemini-2.0-flash",
+        messages: conversationHistory,
+        stream: true
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('API request failed');
+    }
+
+    let fullResponse = '';
+    const botText = addChat(input, "");
+
+    // Stream the response
+    for await (const chunk of streamResponse(response)) {
+      fullResponse += chunk;
+      botText.innerText = fullResponse;
+      // Scroll to bottom as text streams in
+      const messagesContainer = document.getElementById("messages");
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Add assistant's response to history
+    conversationHistory.push({
+      role: "assistant",
+      content: fullResponse
+    });
+
+    return fullResponse;
+  } catch (error) {
+    console.error('Error:', error);
+    return "Sorry, I'm having trouble connecting right now.";
+  }
+}
+
+async function output(input) {
+  const reply = await getGeminiResponse(input);
+  await textToSpeech(reply);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Initialize with system prompt
+  conversationHistory = [{
+    role: "system",
+    content: SYSTEM_PROMPT
+  }];
+  
   const welcome = "Hi, I'm Healio! 👋 I'm here to chat, listen, and support you. How are you feeling today?";
   addChat("", welcome, true);
-  conversationHistory.push({ role: "assistant", content: welcome });
+  
+  // Add welcome message to history
+  conversationHistory.push({
+    role: "assistant",
+    content: welcome
+  });
 
   const inputField = document.getElementById("input");
   inputField.addEventListener("keydown", async (e) => {
@@ -42,63 +128,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// Update getGeminiResponse to include conversation history
-async function getGeminiResponse(input) {
-  try {
-    // Add user's new message to history
-    conversationHistory.push({ role: "user", content: input });
-    
-    // Trim history if it gets too long
-    if (conversationHistory.length > MAX_HISTORY_LENGTH) {
-      // Keep system prompt and remove oldest messages
-      const systemPrompt = conversationHistory[0];
-      conversationHistory.splice(1, 2); // Remove oldest Q&A pair
-      conversationHistory[0] = systemPrompt;
-    }
-
-    console.log("Sending history to API:", conversationHistory); // For debugging
-
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GEMINI_API_KEY}`
-      },
-      body: JSON.stringify({
-        messages: [...conversationHistory], // Send complete history
-        temperature: 0.7,
-        candidate_count: 1,
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`API request failed: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const reply = data.candidates[0].content;
-    
-    // Add assistant's reply to history
-    conversationHistory.push({ role: "assistant", content: reply });
-    
-    // Debug log to verify history
-    console.log("Updated conversation history:", conversationHistory);
-
-    return reply;
-  } catch (error) {
-    console.error('Error details:', error);
-    return "Sorry, I'm having trouble connecting right now. Please try again.";
-  }
-}
-
-async function output(input) {
-  const botText = addChat(input, "Typing...");
-  const reply = await getGeminiResponse(input);
-  botText.innerText = reply;
-  await textToSpeech(reply);
-}
-
-// Update addChat to return the bot text element.
 function addChat(input, placeholder, isWelcome = false) {
   const messagesContainer = document.getElementById("messages");
 
