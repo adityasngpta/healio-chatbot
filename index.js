@@ -1,9 +1,15 @@
+// Initialize conversation history at the top
+const conversationHistory = [];
+const MAX_HISTORY_LENGTH = 20; // Prevent context from growing too large
+
 // Initialize outside function scope
 const GEMINI_API_KEY = "AIzaSyDNf5CReEq_USmxByM3RhTQBaBVXuCSgUM";
 const API_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
 
-// Add conversation history array at the top
-const conversationHistory = [];
+// Initialize conversation with system prompt
+const initializeConversation = () => {
+  conversationHistory.push({ role: "system", content: SYSTEM_PROMPT });
+};
 
 const SYSTEM_PROMPT = `You are Healio, a supportive and empathetic mental health companion for young people. Your responses should be:
 - Warm and conversational, but professional
@@ -19,8 +25,7 @@ If you sense the user is in crisis, always provide these emergency contacts:
 - National Suicide Prevention Lifeline: 1-800-273-8255"`;
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Add system message to conversation history
-  conversationHistory.push({ role: "system", content: SYSTEM_PROMPT });
+  initializeConversation();
   
   // Show welcome message and add to history
   const welcome = "Hi, I'm Healio! 👋 I'm here to chat, listen, and support you. How are you feeling today?";
@@ -40,8 +45,16 @@ document.addEventListener("DOMContentLoaded", () => {
 // Update getGeminiResponse to include conversation history
 async function getGeminiResponse(input) {
   try {
-    // Add user's message to history
+    // Add user's new message to history
     conversationHistory.push({ role: "user", content: input });
+    
+    // Trim history if it gets too long
+    if (conversationHistory.length > MAX_HISTORY_LENGTH) {
+      // Keep system prompt and remove oldest messages
+      const systemPrompt = conversationHistory[0];
+      conversationHistory.splice(1, 2); // Remove oldest Q&A pair
+      conversationHistory[0] = systemPrompt;
+    }
 
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -62,7 +75,7 @@ async function getGeminiResponse(input) {
     const data = await response.json();
     const reply = data.choices[0].message.content;
     
-    // Add bot's reply to history
+    // Add assistant's reply to history
     conversationHistory.push({ role: "assistant", content: reply });
     
     return reply;
