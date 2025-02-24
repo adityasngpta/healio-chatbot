@@ -4,7 +4,7 @@ const MAX_HISTORY_LENGTH = 20; // Prevent context from growing too large
 
 // Initialize outside function scope
 const GEMINI_API_KEY = "AIzaSyDNf5CReEq_USmxByM3RhTQBaBVXuCSgUM";
-const API_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro/chat:completionStream";
 
 // Initialize conversation with system prompt
 const initializeConversation = () => {
@@ -56,6 +56,8 @@ async function getGeminiResponse(input) {
       conversationHistory[0] = systemPrompt;
     }
 
+    console.log("Sending history to API:", conversationHistory); // For debugging
+
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
@@ -63,25 +65,29 @@ async function getGeminiResponse(input) {
         'Authorization': `Bearer ${GEMINI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "gemini-2.0-flash",
-        messages: conversationHistory
+        messages: [...conversationHistory], // Send complete history
+        temperature: 0.7,
+        candidate_count: 1,
       })
     });
 
     if (!response.ok) {
-      throw new Error('API request failed');
+      throw new Error(`API request failed: ${response.status}`);
     }
 
     const data = await response.json();
-    const reply = data.choices[0].message.content;
+    const reply = data.candidates[0].content;
     
     // Add assistant's reply to history
     conversationHistory.push({ role: "assistant", content: reply });
     
+    // Debug log to verify history
+    console.log("Updated conversation history:", conversationHistory);
+
     return reply;
   } catch (error) {
-    console.error('Error:', error);
-    return "Sorry, I'm having trouble connecting right now.";
+    console.error('Error details:', error);
+    return "Sorry, I'm having trouble connecting right now. Please try again.";
   }
 }
 
