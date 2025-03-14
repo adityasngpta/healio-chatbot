@@ -11,6 +11,10 @@
         <div class="chat">
             <div class="chat-header">
                 Healio - Your Supportive Friend
+                <label class="switch">
+                    <input type="checkbox" id="dark-mode-toggle">
+                    <span class="slider round"></span>
+                </label>
             </div>
             <div id="messages" class="messages"></div>
             <div class="input-container">
@@ -18,6 +22,11 @@
                     placeholder="Share what's on your mind... I'm here to listen" 
                     autocomplete="off" 
                     autofocus="true" />
+            </div>
+            <div class="feedback-container">
+                <h3>Feedback</h3>
+                <textarea id="feedback" placeholder="How was your experience?"></textarea>
+                <button id="submit-feedback">Submit</button>
             </div>
         </div>
     </div>
