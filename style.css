@@ -431,68 +431,76 @@ body {
 
 .resource-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
     margin-top: 24px;
 }
 
 .resource-card {
     background-color: var(--input-bg);
-    padding: 20px;
-    border-radius: 8px;
-    transition: transform 0.2s ease;
-    border-left: 4px solid var(--primary-color);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .resource-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .resource-card h3 {
-    margin-bottom: 12px;
     color: var(--primary-color);
+    margin-bottom: 16px;
     font-size: 1.2rem;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 8px;
 }
 
 .resource-card p {
-    margin-bottom: 12px;
-    font-size: 0.95rem;
+    margin-bottom: 16px;
     line-height: 1.6;
+    color: var(--text-color);
 }
 
 .resource-card ul {
-    margin-top: 12px;
-    padding-left: 20px;
+    list-style-type: none;
+    padding: 0;
 }
 
 .resource-card li {
     margin-bottom: 12px;
-    line-height: 1.6;
+    padding-left: 20px;
+    position: relative;
 }
 
-.resource-link {
+.resource-card li::before {
+    content: "•";
+    color: var(--primary-color);
+    position: absolute;
+    left: 0;
+}
+
+.resource-card a {
     color: var(--primary-color);
     text-decoration: none;
-    font-weight: 500;
     transition: color 0.2s ease;
 }
 
-.resource-link:hover {
-    text-decoration: underline;
+.resource-card a:hover {
     color: var(--secondary-color);
+    text-decoration: underline;
 }
 
-.resources-disclaimer {
-    margin-top: 30px;
-    padding: 16px;
-    background-color: rgba(255, 87, 87, 0.1);
-    border-radius: 8px;
-    border-left: 4px solid #ff5757;
+.emergency-notice {
+    grid-column: 1 / -1;
+    background-color: rgba(220, 38, 38, 0.1);
+    border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
-.resources-disclaimer p {
-    line-height: 1.6;
-    font-size: 0.95rem;
+.emergency-notice h3 {
+    color: rgb(220, 38, 38);
+    border-bottom-color: rgb(220, 38, 38);
 }
 
 /* Modal Styles */
@@ -1065,6 +1073,11 @@ body {
     
     .resource-cards {
         grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .resource-card {
+        padding: 16px;
     }
 
     .journal-ai-buttons {
@@ -1096,290 +1109,4 @@ body {
     #goalAreaSelect, #goalSpecificInput {
         width: 100%;
     }
-}
-
-/* Activity Container Styles (for all new activities) */
-.activity-container {
-    background-color: var(--chat-bg);
-    border-radius: 12px;
-    padding: 24px;
-    height: 100%;
-    overflow-y: auto;
-    box-shadow: var(--shadow);
-}
-
-.activity-intro {
-    margin-bottom: 24px;
-    color: #6b7280;
-    line-height: 1.6;
-}
-
-/* Breathing Exercise Styles */
-.breathe-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-}
-
-.breathe-circle {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    position: relative;
-    animation: none; /* Will be set by JS */
-}
-
-.breathe-instruction {
-    font-size: 1.5rem;
-    font-weight: 500;
-    margin-bottom: 8px;
-}
-
-.breathe-timer {
-    font-size: 2.5rem;
-    font-weight: 600;
-}
-
-.breathe-controls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    width: 100%;
-    max-width: 400px;
-}
-
-.breathe-options {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.breathe-option {
-    background-color: var(--input-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.breathe-option.active {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.breathe-guide {
-    background-color: var(--input-bg);
-    padding: 16px;
-    border-radius: 8px;
-    max-width: 500px;
-    line-height: 1.6;
-}
-
-.breathe-guide p {
-    margin-bottom: 10px;
-}
-
-@keyframes breatheIn {
-    from { transform: scale(1); }
-    to { transform: scale(1.2); }
-}
-
-@keyframes breatheOut {
-    from { transform: scale(1.2); }
-    to { transform: scale(1); }
-}
-
-@keyframes breatheHold {
-    from { opacity: 0.8; }
-    to { opacity: 1; }
-}
-
-/* Gratitude Section Styles */
-.gratitude-container {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.gratitude-prompt {
-    background-color: var(--input-bg);
-    padding: 24px;
-    border-radius: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
-.gratitude-entries {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-#gratitudeEntry {
-    width: 100%;
-    min-height: 150px;
-    padding: 16px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background-color: var(--chat-bg);
-    color: var(--text-color);
-    resize: vertical;
-    font-family: 'Inter', sans-serif;
-    line-height: 1.6;
-}
-
-.gratitude-history {
-    border-top: 1px solid var(--border-color);
-    padding-top: 24px;
-}
-
-.gratitude-entry-card {
-    background-color: var(--input-bg);
-    padding: 16px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-}
-
-.gratitude-date {
-    font-size: 0.85rem;
-    color: #6b7280;
-    margin-bottom: 8px;
-}
-
-.gratitude-text {
-    line-height: 1.6;
-    white-space: pre-wrap;
-}
-
-/* Goals Section Styles */
-.goals-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-}
-
-.goal-entry {
-    background-color: var(--input-bg);
-    padding: 24px;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-#goalTitle {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background-color: var(--chat-bg);
-    color: var(--text-color);
-}
-
-#goalTimeframe {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background-color: var(--chat-bg);
-    color: var(--text-color);
-}
-
-#goalSteps {
-    width: 100%;
-    min-height: 100px;
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background-color: var(--chat-bg);
-    color: var(--text-color);
-    resize: vertical;
-    font-family: 'Inter', sans-serif;
-}
-
-.goals-filter {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 16px;
-}
-
-.goal-filter {
-    background-color: var(--input-bg);
-    border: none;
-    border-radius: 20px;
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.goal-filter.active {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.goal-card {
-    background-color: var(--input-bg);
-    padding: 16px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-}
-
-.goal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.goal-title {
-    font-weight: 600;
-}
-
-.goal-badge {
-    font-size: 0.7rem;
-    background-color: var(--primary-color);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-}
-
-.goal-steps {
-    line-height: 1.6;
-    font-size: 0.95rem;
-    margin-top: 10px;
-    white-space: pre-wrap;
-}
-
-.goal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 12px;
-}
-
-.goal-action-btn {
-    background-color: transparent;
-    border: none;
-    color: var(--text-color);
-    cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.2s ease;
-}
-
-.goal-action-btn:hover {
-    opacity: 1;
 }
