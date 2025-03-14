@@ -48,6 +48,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const addGoalBtn = document.getElementById('addGoalBtn');
     const goalsList = document.getElementById('goalsList');
     
+    // Goal AI Elements
+    const goalAreaSelect = document.getElementById('goalAreaSelect');
+    const goalSpecificInput = document.getElementById('goalSpecificInput');
+    const generateGoalsBtn = document.getElementById('generateGoalsBtn');
+    const goalSuggestions = document.getElementById('goalSuggestions');
+    const goalGenerationStatus = document.getElementById('goalGenerationStatus');
+    
     // Mood tracking
     const moodOptions = document.querySelectorAll('.mood');
     
@@ -622,7 +629,244 @@ document.addEventListener('DOMContentLoaded', function() {
     
     addGoalBtn.addEventListener('click', addGoal);
     
-    // 12. Voice Input Integration
+    // 12. AI Goal Generator
+    generateGoalsBtn.addEventListener('click', generateGoalSuggestions);
+    
+    function generateGoalSuggestions() {
+        const area = goalAreaSelect.value;
+        const specific = goalSpecificInput.value.trim();
+        
+        if (!area) {
+            alert('Please select an area to focus on.');
+            return;
+        }
+        
+        // Show loading state
+        goalGenerationStatus.innerHTML = '<i class="fas fa-spinner"></i> Generating personalized goals...';
+        goalGenerationStatus.classList.add('loading');
+        goalSuggestions.classList.remove('active');
+        
+        // Simulate API call delay (would be replaced with actual API call to LLM)
+        setTimeout(() => {
+            const goals = getAIGoalSuggestions(area, specific);
+            displayGoalSuggestions(goals);
+            
+            // Hide loading state
+            goalGenerationStatus.classList.remove('loading');
+        }, 1500);
+    }
+    
+    function getAIGoalSuggestions(area, specific) {
+        // This function simulates an AI generating goals
+        // In a real implementation, this would call an LLM API
+        
+        const goalsByArea = {
+            physical: [
+                "Take a 15-minute walk every day this week",
+                "Drink 8 glasses of water daily",
+                "Try a new healthy recipe each week",
+                "Practice proper posture while sitting at your desk",
+                "Do 10 minutes of stretching before bed",
+                "Get 7-8 hours of sleep each night",
+                "Take the stairs instead of the elevator when possible",
+                "Schedule a health check-up appointment"
+            ],
+            mental: [
+                "Practice 5 minutes of mindfulness meditation daily",
+                "Write down 3 things you're grateful for each day",
+                "Take 10-minute breaks from screens every hour",
+                "Learn one new relaxation technique this week",
+                "Set realistic expectations for your tasks",
+                "Create a designated worry time to contain anxious thoughts",
+                "Practice positive self-talk by challenging negative thoughts",
+                "Listen to calming music before bed"
+            ],
+            social: [
+                "Reach out to one friend you haven't spoken to in a while",
+                "Schedule a regular video call with a family member",
+                "Join a club or group related to your interests",
+                "Practice active listening in your next conversation",
+                "Express appreciation to someone who's helped you",
+                "Volunteer for a community service activity",
+                "Ask meaningful questions when meeting new people",
+                "Organize a small gathering with friends"
+            ],
+            academic: [
+                "Create a study schedule for the week",
+                "Find a study buddy for a difficult class",
+                "Review notes within 24 hours after each class",
+                "Break large assignments into smaller tasks",
+                "Ask one question in class each week",
+                "Meet with a teacher about something you find challenging",
+                "Create flashcards for difficult concepts",
+                "Take a 5-minute break for every 25 minutes of study"
+            ],
+            creative: [
+                "Spend 15 minutes drawing or doodling each day",
+                "Write in a journal for 10 minutes daily",
+                "Learn one new song on an instrument",
+                "Try a new creative hobby this month",
+                "Take a photo of something interesting each day",
+                "Create a vision board for your goals",
+                "Cook a new recipe from scratch",
+                "Redecorate a space in your home"
+            ]
+        };
+        
+        // If specific interests or challenges were provided, use them to customize the goals
+        if (specific) {
+            // In a real implementation, this is where the LLM would generate custom goals
+            // For simulation, we'll just add some specific goals related to the input
+            
+            const specificGoals = [
+                `Set aside 15 minutes to focus on ${specific} each day`,
+                `Find a supportive online community related to ${specific}`,
+                `Research one new tip about ${specific} each week`,
+                `Create a plan to address challenges with ${specific}`
+            ];
+            
+            // Return a mix of standard goals and specific goals
+            return [...specificGoals, ...getRandomItems(goalsByArea[area] || [], 4)];
+        }
+        
+        // Otherwise, return random goals for the selected area
+        return getRandomItems(goalsByArea[area] || [], 6);
+    }
+    
+    function getRandomItems(array, count) {
+        const shuffled = array.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+    }
+    
+    function displayGoalSuggestions(goals) {
+        // Clear previous suggestions
+        goalSuggestions.innerHTML = '';
+        
+        if (!goals || goals.length === 0) {
+            goalSuggestions.innerHTML = '<p>Sorry, I couldn\'t generate any goals. Please try different options.</p>';
+            goalSuggestions.classList.add('active');
+            return;
+        }
+        
+        // Create a container for the goals and the add button
+        const container = document.createElement('div');
+        
+        // Create elements for each suggested goal
+        goals.forEach((goalText, index) => {
+            const goalItem = document.createElement('div');
+            goalItem.className = 'goal-suggestion-item';
+            goalItem.dataset.text = goalText;
+            goalItem.dataset.category = goalAreaSelect.value;
+            
+            const checkbox = document.createElement('div');
+            checkbox.className = 'goal-suggestion-checkbox';
+            checkbox.addEventListener('click', () => {
+                checkbox.classList.toggle('selected');
+                checkbox.innerHTML = checkbox.classList.contains('selected') ? '<i class="fas fa-check"></i>' : '';
+                
+                // Show or hide the "Add Selected Goals" button based on whether any goals are selected
+                updateAddSelectedGoalsButton();
+            });
+            
+            const textSpan = document.createElement('span');
+            textSpan.className = 'goal-suggestion-text';
+            textSpan.textContent = goalText;
+            
+            const categoryBadge = document.createElement('span');
+            categoryBadge.className = 'goal-suggestion-category';
+            let categoryName = '';
+            switch(goalAreaSelect.value) {
+                case 'physical': categoryName = 'Physical'; break;
+                case 'mental': categoryName = 'Mental'; break;
+                case 'social': categoryName = 'Social'; break;
+                case 'academic': categoryName = 'Academic'; break;
+                case 'creative': categoryName = 'Creative'; break;
+                default: categoryName = 'General';
+            }
+            categoryBadge.textContent = categoryName;
+            
+            goalItem.appendChild(checkbox);
+            goalItem.appendChild(textSpan);
+            goalItem.appendChild(categoryBadge);
+            container.appendChild(goalItem);
+        });
+        
+        // Create "Add Selected Goals" button
+        const addSelectedBtn = document.createElement('button');
+        addSelectedBtn.id = 'addSelectedGoalsBtn';
+        addSelectedBtn.className = 'add-selected-goals-btn';
+        addSelectedBtn.textContent = 'Add Selected Goals';
+        addSelectedBtn.addEventListener('click', addSelectedGoals);
+        container.appendChild(addSelectedBtn);
+        
+        // Add all elements to the suggestions container
+        goalSuggestions.appendChild(container);
+        goalSuggestions.classList.add('active');
+    }
+    
+    function updateAddSelectedGoalsButton() {
+        const addSelectedBtn = document.getElementById('addSelectedGoalsBtn');
+        const selectedGoals = document.querySelectorAll('.goal-suggestion-checkbox.selected');
+        
+        if (addSelectedBtn) {
+            if (selectedGoals.length > 0) {
+                addSelectedBtn.classList.add('active');
+            } else {
+                addSelectedBtn.classList.remove('active');
+            }
+        }
+    }
+    
+    function addSelectedGoals() {
+        const selectedGoalItems = document.querySelectorAll('.goal-suggestion-item .goal-suggestion-checkbox.selected');
+        
+        if (selectedGoalItems.length === 0) {
+            alert('Please select at least one goal to add.');
+            return;
+        }
+        
+        // Get existing goals
+        const goals = JSON.parse(localStorage.getItem('healioGoals') || '[]');
+        
+        // Add selected goals
+        selectedGoalItems.forEach(checkbox => {
+            const goalItem = checkbox.parentElement;
+            const goal = {
+                id: Date.now() + Math.floor(Math.random() * 1000),
+                text: goalItem.dataset.text,
+                category: goalItem.dataset.category,
+                completed: false,
+                date: new Date().toISOString(),
+                aiGenerated: true
+            };
+            
+            goals.push(goal);
+        });
+        
+        // Save updated goals
+        localStorage.setItem('healioGoals', JSON.stringify(goals));
+        
+        // Show success message
+        const successMessage = document.createElement('div');
+        successMessage.className = 'goal-success-message';
+        successMessage.textContent = `${selectedGoalItems.length} goal(s) added successfully!`;
+        goalSuggestions.appendChild(successMessage);
+        
+        // Remove the success message after a delay
+        setTimeout(() => {
+            successMessage.remove();
+            
+            // Reset the suggestion UI
+            goalSuggestions.classList.remove('active');
+            goalAreaSelect.selectedIndex = 0;
+            goalSpecificInput.value = '';
+        }, 2000);
+        
+        // Update the goal list display
+        displayGoals();
+    }
+    
+    // 13. Voice Input Integration
     voiceInputBtn.addEventListener('click', () => {
         // Check if speech recognition is defined in speech.js
         if (typeof startSpeechRecognition === 'function') {

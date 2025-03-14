@@ -215,6 +215,39 @@
                         <button id="addGoalBtn" class="primary-button">Add Goal</button>
                     </div>
                     
+                    <!-- AI Goal Generator -->
+                    <div class="goal-ai-section">
+                        <div class="goal-ai-header">
+                            <h3><i class="fas fa-robot"></i> Goal Suggestions</h3>
+                            <p>Let Healio suggest personalized goals based on your interests and needs.</p>
+                        </div>
+                        
+                        <div class="goal-prompt-container">
+                            <div class="goal-prompt-inputs">
+                                <select id="goalAreaSelect">
+                                    <option value="">What area would you like to focus on?</option>
+                                    <option value="physical">Physical health</option>
+                                    <option value="mental">Mental wellbeing</option>
+                                    <option value="social">Social connections</option>
+                                    <option value="academic">Academic success</option>
+                                    <option value="creative">Creative expression</option>
+                                </select>
+                                
+                                <input type="text" id="goalSpecificInput" placeholder="Any specific interests or challenges? (optional)">
+                            </div>
+                            
+                            <button id="generateGoalsBtn" class="secondary-button"><i class="fas fa-magic"></i> Generate Goals</button>
+                        </div>
+                        
+                        <div id="goalSuggestions" class="goal-suggestions">
+                            <!-- AI generated goals will appear here -->
+                        </div>
+                        
+                        <div id="goalGenerationStatus" class="goal-generation-status">
+                            <!-- Loading spinner or status messages will appear here -->
+                        </div>
+                    </div>
+                    
                     <div class="goals-list-container">
                         <h3>Current Goals</h3>
                         <div id="goalsList" class="goals-list"></div>
