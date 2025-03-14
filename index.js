@@ -126,20 +126,6 @@ document.addEventListener("DOMContentLoaded", () => {
       await output(input);
     }
   });
-
-  const darkModeToggle = document.getElementById("dark-mode-toggle");
-  darkModeToggle.addEventListener("change", () => {
-    document.body.classList.toggle("dark-mode", darkModeToggle.checked);
-  });
-
-  const feedbackButton = document.getElementById("submit-feedback");
-  feedbackButton.addEventListener("click", () => {
-    const feedback = document.getElementById("feedback").value;
-    if (feedback.trim() !== "") {
-      alert("Thank you for your feedback!");
-      document.getElementById("feedback").value = "";
-    }
-  });
 });
 
 function addChat(input, placeholder, isWelcome = false) {

@@ -5,32 +5,134 @@
     <link rel="icon" href="bot.png" />
     <link rel="stylesheet" href="style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+    <!-- Welcome Modal -->
+    <div id="welcomeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Welcome to Healio! 👋</h2>
+            <p>I'm your loyal companion, here to listen to you rant about school, homework, or anything else on your mind.</p>
+            <p>Feel free to journal your thoughts, track your mood, or just chat with me. I'll always stay calm, even when things feel overwhelming.</p>
+            <button id="getStartedBtn" class="primary-button">Get Started</button>
+        </div>
+    </div>
+
     <div class="container">
-        <div class="chat">
-            <div class="chat-header">
-                Healio - Your Supportive Friend
-                <label class="switch">
-                    <input type="checkbox" id="dark-mode-toggle">
-                    <span class="slider round"></span>
-                </label>
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="bot.png" alt="Healio" class="bot-avatar">
+                <h3>Healio</h3>
             </div>
-            <div id="messages" class="messages"></div>
-            <div class="input-container">
-                <input id="input" type="text" 
-                    placeholder="Share what's on your mind... I'm here to listen" 
-                    autocomplete="off" 
-                    autofocus="true" />
+            
+            <div class="sidebar-menu">
+                <button id="chatBtn" class="menu-btn active"><i class="fas fa-comment"></i> Chat</button>
+                <button id="journalBtn" class="menu-btn"><i class="fas fa-book"></i> Journal</button>
+                <button id="resourcesBtn" class="menu-btn"><i class="fas fa-link"></i> Resources</button>
             </div>
-            <div class="feedback-container">
-                <h3>Feedback</h3>
-                <textarea id="feedback" placeholder="How was your experience?"></textarea>
-                <button id="submit-feedback">Submit</button>
+            
+            <div class="mood-tracker">
+                <h4>How are you feeling today?</h4>
+                <div class="mood-options">
+                    <span class="mood" data-mood="great">😄</span>
+                    <span class="mood" data-mood="good">🙂</span>
+                    <span class="mood" data-mood="okay">😐</span>
+                    <span class="mood" data-mood="sad">😔</span>
+                    <span class="mood" data-mood="terrible">😢</span>
+                </div>
+            </div>
+            
+            <div class="theme-toggle">
+                <span>Theme: </span>
+                <button id="themeToggleBtn"><i class="fas fa-moon"></i></button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Chat Section -->
+            <div id="chatSection" class="section active">
+                <div class="chat">
+                    <div class="chat-header">
+                        Healio - Your Supportive Friend
+                    </div>
+                    <div id="messages" class="messages"></div>
+                    <div class="input-container">
+                        <input id="input" type="text" 
+                            placeholder="Share what's on your mind... I'm here to listen" 
+                            autocomplete="off" 
+                            autofocus="true" />
+                        <button id="voiceInputBtn" title="Voice Input">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button id="sendBtn" title="Send Message">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Journal Section -->
+            <div id="journalSection" class="section">
+                <div class="journal-container">
+                    <h2>My Journal</h2>
+                    <p class="journal-intro">Writing down your thoughts can help clear your mind. Healio loves journaling too!</p>
+                    
+                    <div class="journal-entry">
+                        <input type="text" id="journalTitle" placeholder="Entry title...">
+                        <div class="journal-date" id="journalDate"></div>
+                        <textarea id="journalContent" placeholder="Today I felt..."></textarea>
+                        <button id="saveJournalBtn" class="primary-button">Save Entry</button>
+                    </div>
+                    
+                    <div class="journal-history">
+                        <h3>Previous Entries</h3>
+                        <div id="journalEntries"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resources Section -->
+            <div id="resourcesSection" class="section">
+                <div class="resources-container">
+                    <h2>Helpful Resources</h2>
+                    <p>Here are some resources that might help when you're feeling overwhelmed:</p>
+                    
+                    <div class="resource-cards">
+                        <div class="resource-card">
+                            <h3>Crisis Support</h3>
+                            <p>If you need immediate help:</p>
+                            <ul>
+                                <li>Crisis Text Line: Text HOME to 741741</li>
+                                <li>National Suicide Prevention Lifeline: 988</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-card">
+                            <h3>Stress Management</h3>
+                            <p>Techniques to manage stress:</p>
+                            <ul>
+                                <li><a href="#" class="resource-link">Deep Breathing Exercises</a></li>
+                                <li><a href="#" class="resource-link">Mindfulness Practices</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-card">
+                            <h3>Academic Support</h3>
+                            <p>Help with school stress:</p>
+                            <ul>
+                                <li><a href="#" class="resource-link">Study Skills Tips</a></li>
+                                <li><a href="#" class="resource-link">Time Management Strategies</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    
     <script type="module" src="index.js"></script>
     <script src="speech.js"></script>
+    <script src="features.js"></script>
 </body>
 </html>
