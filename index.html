@@ -30,6 +30,8 @@
                 <button id="chatBtn" class="menu-btn active"><i class="fas fa-comment"></i> Chat</button>
                 <button id="journalBtn" class="menu-btn"><i class="fas fa-book"></i> Journal</button>
                 <button id="resourcesBtn" class="menu-btn"><i class="fas fa-link"></i> Resources</button>
+                <button id="activitiesBtn" class="menu-btn"><i class="fas fa-spa"></i> Activities</button>
+                <button id="goalsBtn" class="menu-btn"><i class="fas fa-tasks"></i> Goals</button>
             </div>
             
             <div class="mood-tracker">
@@ -57,6 +59,15 @@
                         Healio - Your Supportive Friend
                     </div>
                     <div id="messages" class="messages"></div>
+                    
+                    <!-- Quick Response Options -->
+                    <div class="quick-responses" id="quickResponses">
+                        <button class="quick-response-btn" data-response="I'm feeling stressed about school">Stressed about school</button>
+                        <button class="quick-response-btn" data-response="I need help with time management">Time management</button>
+                        <button class="quick-response-btn" data-response="I'm feeling overwhelmed">Feeling overwhelmed</button>
+                        <button class="quick-response-btn" data-response="I'm having trouble focusing">Trouble focusing</button>
+                    </div>
+                    
                     <div class="input-container">
                         <input id="input" type="text" 
                             placeholder="Share what's on your mind... I'm here to listen" 
@@ -82,6 +93,17 @@
                         <input type="text" id="journalTitle" placeholder="Entry title...">
                         <div class="journal-date" id="journalDate"></div>
                         <textarea id="journalContent" placeholder="Today I felt..."></textarea>
+                        
+                        <!-- AI Journal Assistant -->
+                        <div class="journal-ai-assistant">
+                            <div class="journal-ai-buttons">
+                                <button id="journalPromptBtn" class="secondary-button"><i class="fas fa-lightbulb"></i> Get a prompt</button>
+                                <button id="journalAnalyzeBtn" class="secondary-button"><i class="fas fa-chart-line"></i> Analyze my entry</button>
+                                <button id="journalExpandBtn" class="secondary-button"><i class="fas fa-expand-alt"></i> Help me expand</button>
+                            </div>
+                            <div id="journalAiResponse" class="journal-ai-response"></div>
+                        </div>
+                        
                         <button id="saveJournalBtn" class="primary-button">Save Entry</button>
                     </div>
                     
@@ -125,6 +147,72 @@
                                 <li><a href="#" class="resource-link">Time Management Strategies</a></li>
                             </ul>
                         </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- New Activities Section -->
+            <div id="activitiesSection" class="section">
+                <div class="activities-container">
+                    <h2>Mindfulness Activities</h2>
+                    <p>Try these activities to help you relax and refocus:</p>
+                    
+                    <div class="activity-cards">
+                        <div class="activity-card" id="breathingExercise">
+                            <h3><i class="fas fa-wind"></i> Breathing Exercise</h3>
+                            <p>Follow the animation to practice deep breathing.</p>
+                            <div class="breathing-animation">
+                                <div class="breathing-circle"></div>
+                                <p class="breathing-instruction">Breathe in...</p>
+                            </div>
+                            <button class="start-activity-btn">Start</button>
+                        </div>
+                        
+                        <div class="activity-card" id="gratitudeExercise">
+                            <h3><i class="fas fa-heart"></i> Gratitude Practice</h3>
+                            <p>Write down three things you're grateful for today.</p>
+                            <div class="gratitude-inputs">
+                                <input type="text" placeholder="I'm grateful for..." class="gratitude-input">
+                                <input type="text" placeholder="I'm grateful for..." class="gratitude-input">
+                                <input type="text" placeholder="I'm grateful for..." class="gratitude-input">
+                            </div>
+                            <button class="save-gratitude-btn">Save</button>
+                        </div>
+                        
+                        <div class="activity-card" id="thoughtReframing">
+                            <h3><i class="fas fa-sync-alt"></i> Thought Reframing</h3>
+                            <p>Transform negative thoughts into positive ones.</p>
+                            <div class="reframing-container">
+                                <textarea class="negative-thought" placeholder="Write a negative thought..."></textarea>
+                                <i class="fas fa-arrow-down"></i>
+                                <textarea class="positive-reframe" placeholder="Reframe it positively..."></textarea>
+                            </div>
+                            <button class="reframe-btn">Get Help Reframing</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- New Goals Section -->
+            <div id="goalsSection" class="section">
+                <div class="goals-container">
+                    <h2>My Wellness Goals</h2>
+                    <p>Set and track small goals to improve your wellbeing.</p>
+                    
+                    <div class="add-goal-form">
+                        <input type="text" id="goalInput" placeholder="Enter a new goal...">
+                        <select id="goalCategory">
+                            <option value="physical">Physical Health</option>
+                            <option value="mental">Mental Wellbeing</option>
+                            <option value="social">Social Connection</option>
+                            <option value="academic">Academic Success</option>
+                        </select>
+                        <button id="addGoalBtn" class="primary-button">Add Goal</button>
+                    </div>
+                    
+                    <div class="goals-list-container">
+                        <h3>Current Goals</h3>
+                        <div id="goalsList" class="goals-list"></div>
                     </div>
                 </div>
             </div>
