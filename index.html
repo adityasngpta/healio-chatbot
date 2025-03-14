@@ -29,9 +29,10 @@
             <div class="sidebar-menu">
                 <button id="chatBtn" class="menu-btn active"><i class="fas fa-comment"></i> Chat</button>
                 <button id="journalBtn" class="menu-btn"><i class="fas fa-book"></i> Journal</button>
+                <button id="breatheBtn" class="menu-btn"><i class="fas fa-wind"></i> Breathing</button>
+                <button id="gratitudeBtn" class="menu-btn"><i class="fas fa-heart"></i> Gratitude</button>
+                <button id="goalsBtn" class="menu-btn"><i class="fas fa-bullseye"></i> Goals</button>
                 <button id="resourcesBtn" class="menu-btn"><i class="fas fa-link"></i> Resources</button>
-                <button id="activitiesBtn" class="menu-btn"><i class="fas fa-spa"></i> Activities</button>
-                <button id="goalsBtn" class="menu-btn"><i class="fas fa-tasks"></i> Goals</button>
             </div>
             
             <div class="mood-tracker">
@@ -119,39 +120,119 @@
                 </div>
             </div>
             
+            <!-- Breathing Exercise Section -->
+            <div id="breatheSection" class="section">
+                <div class="activity-container">
+                    <h2>Breathing Exercises</h2>
+                    <p class="activity-intro">Taking a moment to breathe can help calm your mind and reduce stress.</p>
+                    
+                    <div class="breathe-container">
+                        <div class="breathe-circle">
+                            <div class="breathe-instruction">Breathe</div>
+                            <div class="breathe-timer">4</div>
+                        </div>
+                        <div class="breathe-controls">
+                            <button id="startBreathingBtn" class="primary-button">Start Exercise</button>
+                            <div class="breathe-options">
+                                <button class="breathe-option active" data-pattern="4-4-4-4">Box Breathing</button>
+                                <button class="breathe-option" data-pattern="4-7-8">4-7-8 Technique</button>
+                                <button class="breathe-option" data-pattern="5-5">Simple Calm</button>
+                            </div>
+                        </div>
+                        <div class="breathe-guide">
+                            <p><strong>Box Breathing:</strong> Inhale for 4 seconds, hold for 4 seconds, exhale for 4 seconds, hold for 4 seconds.</p>
+                            <p><strong>4-7-8 Technique:</strong> Inhale for 4 seconds, hold for 7 seconds, exhale for 8 seconds.</p>
+                            <p><strong>Simple Calm:</strong> Inhale for 5 seconds, exhale for 5 seconds.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gratitude Section -->
+            <div id="gratitudeSection" class="section">
+                <div class="activity-container">
+                    <h2>Gratitude Practice</h2>
+                    <p class="activity-intro">Taking time to reflect on what you're grateful for can boost your mood and overall well-being.</p>
+                    
+                    <div class="gratitude-container">
+                        <div class="gratitude-prompt">
+                            <h3 id="gratitudePromptText">What are three things you're grateful for today?</h3>
+                            <button id="newPromptBtn" class="secondary-button">New Prompt</button>
+                        </div>
+                        
+                        <div class="gratitude-entries">
+                            <textarea id="gratitudeEntry" placeholder="I am grateful for..."></textarea>
+                            <button id="saveGratitudeBtn" class="primary-button">Save Gratitude</button>
+                        </div>
+                        
+                        <div class="gratitude-history">
+                            <h3>Previous Gratitude Entries</h3>
+                            <div id="gratitudeEntryList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Resources Section -->
             <div id="resourcesSection" class="section">
                 <div class="resources-container">
                     <h2>Helpful Resources</h2>
-                    <p>Here are some resources that might help when you're feeling overwhelmed:</p>
+                    <p>Here are some trusted resources that might help when you're feeling overwhelmed or need support:</p>
                     
                     <div class="resource-cards">
                         <div class="resource-card">
                             <h3>Crisis Support</h3>
-                            <p>If you need immediate help:</p>
+                            <p>If you need immediate help or are experiencing a crisis, these services provide 24/7 support:</p>
                             <ul>
-                                <li>Crisis Text Line: Text HOME to 741741</li>
-                                <li>National Suicide Prevention Lifeline: 988</li>
+                                <li><a href="https://www.crisistextline.org/" target="_blank" class="resource-link">Crisis Text Line</a>: Text HOME to 741741 for free 24/7 crisis counseling</li>
+                                <li><a href="https://988lifeline.org/" target="_blank" class="resource-link">988 Suicide & Crisis Lifeline</a>: Call or text 988 any time</li>
+                                <li><a href="https://www.thetrevorproject.org/" target="_blank" class="resource-link">The Trevor Project</a>: Support for LGBTQ+ youth - call 1-866-488-7386</li>
                             </ul>
                         </div>
                         
                         <div class="resource-card">
                             <h3>Stress Management</h3>
-                            <p>Techniques to manage stress:</p>
+                            <p>These evidence-based resources can help you manage stress and anxiety:</p>
                             <ul>
-                                <li><a href="#" class="resource-link">Deep Breathing Exercises</a></li>
-                                <li><a href="#" class="resource-link">Mindfulness Practices</a></li>
+                                <li><a href="https://www.headspace.com/students" target="_blank" class="resource-link">Headspace for Students</a>: Meditation and mindfulness app with special student pricing</li>
+                                <li><a href="https://www.calm.com/schools" target="_blank" class="resource-link">Calm for Schools</a>: Free mindfulness resources for teachers and students</li>
+                                <li><a href="https://www.anxietycanada.com/resources/mindshift-cbt/" target="_blank" class="resource-link">MindShift CBT</a>: Free app using cognitive behavioral therapy techniques for anxiety</li>
                             </ul>
                         </div>
                         
                         <div class="resource-card">
                             <h3>Academic Support</h3>
-                            <p>Help with school stress:</p>
+                            <p>Resources to help manage academic stress and improve study habits:</p>
                             <ul>
-                                <li><a href="#" class="resource-link">Study Skills Tips</a></li>
-                                <li><a href="#" class="resource-link">Time Management Strategies</a></li>
+                                <li><a href="https://www.khanacademy.org/" target="_blank" class="resource-link">Khan Academy</a>: Free expert-created content and resources for academics</li>
+                                <li><a href="https://www.edx.org/" target="_blank" class="resource-link">edX</a>: Free courses from top educational institutions</li>
+                                <li><a href="https://www.coursera.org/collections/free-online-courses" target="_blank" class="resource-link">Coursera Free Courses</a>: Free courses on various topics</li>
                             </ul>
                         </div>
+                        
+                        <div class="resource-card">
+                            <h3>Mental Health Apps</h3>
+                            <p>Mobile apps designed to support mental well-being:</p>
+                            <ul>
+                                <li><a href="https://www.happify.com/" target="_blank" class="resource-link">Happify</a>: Science-based activities and games to reduce stress</li>
+                                <li><a href="https://www.wysa.io/" target="_blank" class="resource-link">Wysa</a>: AI chatbot offering emotional support and coaching</li>
+                                <li><a href="https://daylio.net/" target="_blank" class="resource-link">Daylio</a>: Mood tracking and journaling app</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-card">
+                            <h3>Self-Help Books</h3>
+                            <p>Recommended reading for understanding and improving mental health:</p>
+                            <ul>
+                                <li>"Feeling Good: The New Mood Therapy" by David D. Burns</li>
+                                <li>"Atomic Habits" by James Clear</li>
+                                <li>"The Anxiety and Phobia Workbook" by Edmund J. Bourne</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="resources-disclaimer">
+                        <p><strong>Important:</strong> If you're experiencing a medical emergency or are in immediate danger, please call emergency services (911 in the US) right away. These resources are not substitutes for professional care.</p>
                     </div>
                 </div>
             </div>
