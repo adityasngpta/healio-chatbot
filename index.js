@@ -17,6 +17,9 @@ If you sense the user is in crisis, always provide these emergency contacts:
 - Crisis Text Line: Text HOME to 741741
 - National Suicide Prevention Lifeline: 1-800-273-8255"`;
 
+// Audio feedback settings
+let audioEnabled = true; // Can be toggled by user
+
 async function* streamResponse(response) {
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -98,8 +101,20 @@ async function getGeminiResponse(input) {
 }
 
 async function output(input) {
-  const reply = await getGeminiResponse(input);
-  await textToSpeech(reply);
+  try {
+    console.log('Processing user input:', input);
+    const reply = await getGeminiResponse(input);
+    
+    // Check if audio is enabled before speaking
+    if (audioEnabled && typeof textToSpeech === 'function') {
+      console.log('Starting text-to-speech for response');
+      await textToSpeech(reply);
+    } else {
+      console.log('Audio output skipped (disabled or not available)');
+    }
+  } catch (error) {
+    console.error('Error in output function:', error);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -118,6 +133,11 @@ document.addEventListener("DOMContentLoaded", () => {
     content: welcome
   });
 
+  // Initialize speech capabilities
+  if (typeof initSpeechRecognition === 'function') {
+    initSpeechRecognition();
+  }
+
   const inputField = document.getElementById("input");
   inputField.addEventListener("keydown", async (e) => {
     if (e.key === "Enter" && inputField.value.trim() !== "") {
@@ -126,6 +146,35 @@ document.addEventListener("DOMContentLoaded", () => {
       await output(input);
     }
   });
+
+  // Add audio toggle button if available
+  const audioToggleBtn = document.getElementById("audioToggleBtn");
+  if (audioToggleBtn) {
+    audioToggleBtn.addEventListener("click", () => {
+      audioEnabled = !audioEnabled;
+      audioToggleBtn.innerHTML = audioEnabled ? 
+        '<i class="fas fa-volume-up"></i>' : 
+        '<i class="fas fa-volume-mute"></i>';
+      audioToggleBtn.title = audioEnabled ? "Mute Audio" : "Enable Audio";
+    });
+  }
+  
+  // Add send button functionality
+  const sendBtn = document.getElementById("sendBtn");
+  if (sendBtn) {
+    sendBtn.addEventListener("click", () => {
+      if (inputField.value.trim() !== "") {
+        const event = new KeyboardEvent('keydown', {
+          key: 'Enter',
+          code: 'Enter',
+          keyCode: 13,
+          which: 13,
+          bubbles: true
+        });
+        inputField.dispatchEvent(event);
+      }
+    });
+  }
 });
 
 function addChat(input, placeholder, isWelcome = false) {

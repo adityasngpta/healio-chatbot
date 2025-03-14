@@ -191,6 +191,27 @@ body {
     text-align: center;
     font-weight: 600;
     font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.control-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.control-btn:hover {
+    transform: scale(1.1);
 }
 
 .messages {
@@ -301,6 +322,23 @@ body {
 
 #voiceInputBtn:hover, #sendBtn:hover {
     background-color: var(--secondary-color);
+}
+
+#voiceInputBtn.recording {
+    background-color: #ef4444;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 /* Journal Styles */
@@ -791,6 +829,21 @@ body {
 
 .goal-delete:hover {
     opacity: 1;
+}
+
+/* Debug Panel */
+.debug-btn {
+    background-color: #1f2937;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.debug-btn:hover {
+    background-color: #374151;
 }
 
 /* Responsive Styles */

@@ -1,60 +1,116 @@
-// Text to Speech
-
+// Speech functionality for Healio
 const synth = window.speechSynthesis;
-
-const textToSpeech = (string) => {
-  return new Promise((resolve) => {
-    const voice = new SpeechSynthesisUtterance(string);
-    voice.text = string;
-    voice.lang = "en-US";
-    voice.volume = 1;
-    voice.rate = 1;
-    voice.pitch = 1;
-    
-    voice.onend = () => {
-      resolve();
-    };
-    
-    synth.speak(voice);
-  });
-}
-
-// Speech recognition functionality for Healio
-
 let recognition;
+let voices = [];
+
+// Text-to-speech functionality
+function textToSpeech(text) {
+    return new Promise((resolve) => {
+        // Skip empty text
+        if (!text || typeof text !== 'string' || text.trim() === '') {
+            console.warn('Empty text provided to text-to-speech');
+            resolve();
+            return;
+        }
+        
+        // Check for browser support
+        if (!('speechSynthesis' in window)) {
+            console.error('Text-to-speech not supported in this browser.');
+            resolve();
+            return;
+        }
+
+        // Create and configure utterance
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "en-US";
+        utterance.volume = 1;
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        
+        // Set a voice if available
+        if (voices.length > 0) {
+            // Try to find preferred voices
+            const preferredVoices = ['Samantha', 'Google US English', 'Microsoft Zira', 'Google UK English Female'];
+            let selectedVoice = null;
+            
+            for (const name of preferredVoices) {
+                const voice = voices.find(v => v.name.includes(name));
+                if (voice) {
+                    selectedVoice = voice;
+                    break;
+                }
+            }
+            
+            // If no preferred voice found, use the first available one
+            utterance.voice = selectedVoice || voices[0];
+        }
+        
+        // Set up resolution
+        utterance.onend = () => {
+            console.log('Speech synthesis finished');
+            resolve();
+        };
+        
+        utterance.onerror = (event) => {
+            console.error('Speech synthesis error:', event);
+            resolve();
+        };
+        
+        // Reset any ongoing speech before starting new one
+        synth.cancel();
+        
+        // Start speaking
+        synth.speak(utterance);
+        
+        // Safari sometimes doesn't trigger onend, so add a timeout safety
+        setTimeout(() => {
+            if (synth.speaking) {
+                console.warn('Speech synthesis timeout - resolving anyway');
+                resolve();
+            }
+        }, 10000); // 10 seconds timeout
+    });
+}
 
 // Initialize speech recognition
 function initSpeechRecognition() {
-    // Check for browser support
+    // Get available voices for speech synthesis
+    voices = synth.getVoices();
+    if (voices.length === 0) {
+        // Chrome loads voices asynchronously
+        synth.onvoiceschanged = () => {
+            voices = synth.getVoices();
+            console.log(`Loaded ${voices.length} voices for speech synthesis`);
+        };
+    }
+    
+    // Check for browser support for speech recognition
     if ('webkitSpeechRecognition' in window) {
         recognition = new webkitSpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
-        
-        // Set up event handlers
-        setupSpeechEvents();
+        setupRecognition(recognition);
     } else if ('SpeechRecognition' in window) {
         recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
-        
-        // Set up event handlers
-        setupSpeechEvents();
+        setupRecognition(recognition);
     } else {
         console.error('Speech recognition not supported in this browser.');
-        alert('Speech recognition is not supported in your browser. Please try using Chrome or Edge.');
     }
 }
 
-function setupSpeechEvents() {
+function setupRecognition(recognition) {
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    
+    // Set up event handlers
     recognition.onstart = function() {
         console.log('Speech recognition started...');
     };
     
     recognition.onerror = function(event) {
         console.error('Speech recognition error:', event.error);
+        if (event.error === 'not-allowed' || event.error === 'permission-denied') {
+            alert('Microphone access denied. Please enable microphone permissions to use voice input.');
+        }
         endSpeechRecognition();
     };
     
@@ -64,20 +120,31 @@ function setupSpeechEvents() {
     };
     
     recognition.onresult = function(event) {
-        let interimTranscript = '';
         let finalTranscript = '';
         
         for (let i = event.resultIndex; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
                 finalTranscript += event.results[i][0].transcript;
-            } else {
-                interimTranscript += event.results[i][0].transcript;
             }
         }
         
-        // If we have a final transcript, add it to the input field
+        // If we have a final transcript, add it to the input field and submit
         if (finalTranscript) {
-            document.getElementById('input').value = finalTranscript;
+            const inputField = document.getElementById('input');
+            inputField.value = finalTranscript;
+            
+            // Wait a moment to make sure the user sees what was transcribed
+            setTimeout(() => {
+                // Submit the form by simulating Enter key press
+                const enterEvent = new KeyboardEvent('keydown', {
+                    key: 'Enter',
+                    code: 'Enter',
+                    keyCode: 13,
+                    which: 13,
+                    bubbles: true
+                });
+                inputField.dispatchEvent(enterEvent);
+            }, 500);
         }
     };
 }
@@ -86,17 +153,29 @@ function startSpeechRecognition() {
     // Initialize if not already done
     if (!recognition) {
         initSpeechRecognition();
+        
+        // If still not initialized, show error
+        if (!recognition) {
+            alert('Speech recognition is not supported in your browser. Please try using Chrome or Edge.');
+            return;
+        }
     }
     
-    if (recognition) {
-        try {
-            recognition.start();
-        } catch (error) {
-            console.error('Error starting speech recognition:', error);
+    try {
+        recognition.start();
+    } catch (error) {
+        console.error('Error starting speech recognition:', error);
+        
+        // If already started, stop and restart
+        if (error.name === 'InvalidStateError') {
             recognition.stop();
             setTimeout(() => {
-                recognition.start();
-            }, 200);
+                try {
+                    recognition.start();
+                } catch (err) {
+                    console.error('Failed to restart speech recognition:', err);
+                }
+            }, 300);
         }
     }
 }
@@ -107,65 +186,60 @@ function endSpeechRecognition() {
     document.dispatchEvent(event);
 }
 
-// Text-to-speech functionality
-function textToSpeech(text) {
-    // Check for browser support
-    if ('speechSynthesis' in window) {
-        // Create a speech synthesis utterance
-        const utterance = new SpeechSynthesisUtterance(text);
-        
-        // Configure the utterance
-        utterance.lang = 'en-US';
-        utterance.rate = 1.0; // Speech rate (0.1 to 10)
-        utterance.pitch = 1.0; // Speech pitch (0 to 2)
-        
-        // Get voices
-        let voices = window.speechSynthesis.getVoices();
-        
-        // If voices array is empty, wait for voices to load
-        if (voices.length === 0) {
-            window.speechSynthesis.onvoiceschanged = function() {
-                voices = window.speechSynthesis.getVoices();
-                setVoice();
-            };
-        } else {
-            setVoice();
-        }
-        
-        function setVoice() {
-            // Try to find a good voice (preferably a female voice)
-            const preferredVoices = ['Samantha', 'Google UK English Female', 'Microsoft Zira'];
-            
-            for (let name of preferredVoices) {
-                const voice = voices.find(v => v.name.includes(name));
-                if (voice) {
-                    utterance.voice = voice;
-                    break;
-                }
-            }
-            
-            // Use any voice if preferred ones not found
-            if (!utterance.voice && voices.length > 0) {
-                utterance.voice = voices[0];
-            }
-        }
-        
-        // Cancel any ongoing speech
-        window.speechSynthesis.cancel();
-        
-        // Speak the text
-        window.speechSynthesis.speak(utterance);
-        
-        return new Promise((resolve) => {
-            utterance.onend = resolve;
-        });
-    } else {
-        console.error('Text-to-speech not supported in this browser.');
-        return Promise.resolve();
-    }
-}
-
-// Initialize speech recognition when the page loads
+// Test audio capability on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize speech recognition
     initSpeechRecognition();
+    
+    // Test speech synthesis
+    if ('speechSynthesis' in window) {
+        console.log('Speech synthesis is supported on this browser.');
+    } else {
+        console.warn('Speech synthesis is NOT supported on this browser.');
+    }
+    
+    // Add debug button event listener for audio testing if it exists
+    const debugButton = document.getElementById('debugAudio');
+    if (debugButton) {
+        debugButton.addEventListener('click', function() {
+            testAudioCapabilities();
+        });
+    }
 });
+
+// Function for testing audio capabilities (can be called from console for debugging)
+function testAudioCapabilities() {
+    console.log('Testing audio capabilities...');
+    
+    // Test speech synthesis
+    if ('speechSynthesis' in window) {
+        console.log('Speech synthesis supported. Available voices:');
+        const voices = synth.getVoices();
+        console.log(voices);
+    } else {
+        console.error('Speech synthesis not supported');
+    }
+    
+    // Test speech recognition
+    if (recognition) {
+        console.log('Speech recognition appears to be initialized');
+    } else {
+        console.error('Speech recognition not initialized');
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            console.log('Speech recognition is supported but not initialized properly');
+        } else {
+            console.error('Speech recognition not supported by this browser');
+        }
+    }
+    
+    // Test microphone access
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(function(stream) {
+            console.log('Microphone access granted');
+            // Stop all tracks to release the microphone
+            stream.getTracks().forEach(track => track.stop());
+        })
+        .catch(function(err) {
+            console.error('Microphone access error:', err);
+        });
+}

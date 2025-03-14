@@ -57,6 +57,11 @@
                 <div class="chat">
                     <div class="chat-header">
                         Healio - Your Supportive Friend
+                        <div class="chat-controls">
+                            <button id="audioToggleBtn" title="Mute Audio" class="control-btn">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                        </div>
                     </div>
                     <div id="messages" class="messages"></div>
                     
@@ -217,6 +222,11 @@
                 </div>
             </div>
         </div>
+    </div>
+    
+    <!-- Debug Panel (hidden in production) -->
+    <div id="debugPanel" style="display: none; position: fixed; bottom: 10px; right: 10px; z-index: 1000;">
+        <button id="debugAudio" class="debug-btn">Test Audio</button>
     </div>
     
     <script type="module" src="index.js"></script>
