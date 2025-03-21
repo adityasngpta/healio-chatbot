@@ -1,4 +1,4 @@
-# Healio - Mental Health Chatbot
+# He@lio - Mental Health Chatbot
 
 A supportive and empathetic mental health companion powered by Google's Gemini AI. Built with vanilla JavaScript, HTML, & CSS.
 

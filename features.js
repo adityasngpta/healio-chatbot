@@ -1,4 +1,4 @@
-// Features.js - Additional functionality for Healio
+// Features.js - Additional functionality for He@lio
 
 document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements
@@ -62,19 +62,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 1. Welcome Modal
     // Show welcome modal if it's the first visit
-    if (!localStorage.getItem('healioWelcomeSeen')) {
+    if (!localStorage.getItem('He@lioWelcomeSeen')) {
         welcomeModal.style.display = 'flex';
     }
     
     // Close welcome modal
     closeButton.addEventListener('click', () => {
         welcomeModal.style.display = 'none';
-        localStorage.setItem('healioWelcomeSeen', 'true');
+        localStorage.setItem('He@lioWelcomeSeen', 'true');
     });
     
     getStartedBtn.addEventListener('click', () => {
         welcomeModal.style.display = 'none';
-        localStorage.setItem('healioWelcomeSeen', 'true');
+        localStorage.setItem('He@lioWelcomeSeen', 'true');
     });
     
     // 2. Theme Toggle
@@ -85,15 +85,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const icon = themeToggleBtn.querySelector('i');
         if (document.body.classList.contains('dark-theme')) {
             icon.className = 'fas fa-sun';
-            localStorage.setItem('healioTheme', 'dark');
+            localStorage.setItem('He@lioTheme', 'dark');
         } else {
             icon.className = 'fas fa-moon';
-            localStorage.setItem('healioTheme', 'light');
+            localStorage.setItem('He@lioTheme', 'light');
         }
     });
     
     // Load saved theme
-    if (localStorage.getItem('healioTheme') === 'dark') {
+    if (localStorage.getItem('He@lioTheme') === 'dark') {
         document.body.classList.add('dark-theme');
         themeToggleBtn.querySelector('i').className = 'fas fa-sun';
     }
@@ -152,11 +152,11 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         // Get existing entries or initialize empty array
-        const entries = JSON.parse(localStorage.getItem('healioJournalEntries') || '[]');
+        const entries = JSON.parse(localStorage.getItem('He@lioJournalEntries') || '[]');
         entries.push(entry);
         
         // Save to localStorage
-        localStorage.setItem('healioJournalEntries', JSON.stringify(entries));
+        localStorage.setItem('He@lioJournalEntries', JSON.stringify(entries));
         
         // Clear form
         journalTitle.value = '';
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function displayJournalEntries() {
-        const entries = JSON.parse(localStorage.getItem('healioJournalEntries') || '[]');
+        const entries = JSON.parse(localStorage.getItem('He@lioJournalEntries') || '[]');
         
         if (entries.length === 0) {
             journalEntries.innerHTML = '<p class="empty-state">No entries yet. Start writing today!</p>';
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('selected');
             
             // Store selected mood
-            localStorage.setItem('healioCurrentMood', this.dataset.mood);
+            localStorage.setItem('He@lioCurrentMood', this.dataset.mood);
             
             // Provide feedback based on mood
             const messages = document.getElementById('messages');
@@ -355,7 +355,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Load saved mood
-    const savedMood = localStorage.getItem('healioCurrentMood');
+    const savedMood = localStorage.getItem('He@lioCurrentMood');
     if (savedMood) {
         document.querySelector(`.mood[data-mood="${savedMood}"]`)?.classList.add('selected');
     }
@@ -465,9 +465,9 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         // Get existing entries or initialize empty array
-        const entries = JSON.parse(localStorage.getItem('healioGratitudeEntries') || '[]');
+        const entries = JSON.parse(localStorage.getItem('He@lioGratitudeEntries') || '[]');
         entries.push(gratitudeEntry);
-        localStorage.setItem('healioGratitudeEntries', JSON.stringify(entries));
+        localStorage.setItem('He@lioGratitudeEntries', JSON.stringify(entries));
         
         // Clear inputs
         gratitudeInputs.forEach(input => {
@@ -527,11 +527,11 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         // Get existing goals or initialize empty array
-        const goals = JSON.parse(localStorage.getItem('healioGoals') || '[]');
+        const goals = JSON.parse(localStorage.getItem('He@lioGoals') || '[]');
         goals.push(goal);
         
         // Save to localStorage
-        localStorage.setItem('healioGoals', JSON.stringify(goals));
+        localStorage.setItem('He@lioGoals', JSON.stringify(goals));
         
         // Clear input
         goalInput.value = '';
@@ -541,7 +541,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function displayGoals() {
-        const goals = JSON.parse(localStorage.getItem('healioGoals') || '[]');
+        const goals = JSON.parse(localStorage.getItem('He@lioGoals') || '[]');
         
         if (goals.length === 0) {
             goalsList.innerHTML = '<p class="empty-state">No goals yet. Add your first wellness goal above!</p>';
@@ -607,7 +607,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function toggleGoalCompletion(goalId) {
-        const goals = JSON.parse(localStorage.getItem('healioGoals') || '[]');
+        const goals = JSON.parse(localStorage.getItem('He@lioGoals') || '[]');
         
         const updatedGoals = goals.map(goal => {
             if (goal.id == goalId) {
@@ -616,14 +616,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return goal;
         });
         
-        localStorage.setItem('healioGoals', JSON.stringify(updatedGoals));
+        localStorage.setItem('He@lioGoals', JSON.stringify(updatedGoals));
         displayGoals();
     }
     
     function deleteGoal(goalId) {
-        const goals = JSON.parse(localStorage.getItem('healioGoals') || '[]');
+        const goals = JSON.parse(localStorage.getItem('He@lioGoals') || '[]');
         const updatedGoals = goals.filter(goal => goal.id != goalId);
-        localStorage.setItem('healioGoals', JSON.stringify(updatedGoals));
+        localStorage.setItem('He@lioGoals', JSON.stringify(updatedGoals));
         displayGoals();
     }
     
@@ -826,7 +826,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Get existing goals
-        const goals = JSON.parse(localStorage.getItem('healioGoals') || '[]');
+        const goals = JSON.parse(localStorage.getItem('He@lioGoals') || '[]');
         
         // Add selected goals
         selectedGoalItems.forEach(checkbox => {
@@ -844,7 +844,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Save updated goals
-        localStorage.setItem('healioGoals', JSON.stringify(goals));
+        localStorage.setItem('He@lioGoals', JSON.stringify(goals));
         
         // Show success message
         const successMessage = document.createElement('div');

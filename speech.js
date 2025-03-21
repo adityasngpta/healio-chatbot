@@ -1,4 +1,4 @@
-// Speech functionality for Healio
+// Speech functionality for He@lio
 const synth = window.speechSynthesis;
 let recognition;
 let voices = [];

@@ -4,7 +4,7 @@ let conversationHistory = [];
 const GEMINI_API_KEY = "AIzaSyDNf5CReEq_USmxByM3RhTQBaBVXuCSgUM";
 const API_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
 
-const SYSTEM_PROMPT = `You are Healio, a supportive and empathetic mental health companion for young people. Your responses should be:
+const SYSTEM_PROMPT = `You are He@lio, a supportive and empathetic mental health companion for young people. Your responses should be:
 - Warm and conversational, but professional
 - Non-judgmental and validating of emotions
 - Clear and concise (keep responses under 3 sentences when possible)
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     content: SYSTEM_PROMPT
   }];
   
-  const welcome = "Hi, I'm Healio! 👋 I'm here to chat, listen, and support you. How are you feeling today?";
+  const welcome = "Hi, I'm He@lio! 👋 I'm here to chat, listen, and support you. How are you feeling today?";
   addChat("", welcome, true);
   
   // Add welcome message to history
