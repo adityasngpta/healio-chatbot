@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>He@lio - Youth Mental Health Companion</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>He@lio - Your Mental Health Companion</title>
+    <link rel="icon" href="bot.png" />
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -20,14 +20,6 @@
     </div>
 
     <div class="container">
-        <header>
-            <div class="logo">
-                <img src="logo.png" alt="He@lio Logo">
-                <h1>He@lio</h1>
-            </div>
-            <div class="subtitle">Youth Mental Health Companion</div>
-        </header>
-        
         <div class="sidebar">
             <div class="sidebar-header">
                 <img src="bot.png" alt="He@lio" class="bot-avatar">
@@ -69,9 +61,6 @@
                             <button id="audioToggleBtn" title="Mute Audio" class="control-btn">
                                 <i class="fas fa-volume-up"></i>
                             </button>
-                            <select id="voiceSelector" title="Select Voice" class="voice-selector">
-                                <!-- Will be populated by JavaScript -->
-                            </select>
                         </div>
                     </div>
                     <div id="messages" class="messages"></div>
@@ -89,12 +78,13 @@
                             placeholder="Share what's on your mind... I'm here to listen" 
                             autocomplete="off" 
                             autofocus="true" />
-                        <button id="micBtn" title="Voice Input" class="control-btn">
+                        <button id="voiceInputBtn" title="Voice Input">
                             <i class="fas fa-microphone"></i>
                         </button>
-                        <button id="sendBtn" title="Send Message" class="control-btn">
+                        <button id="sendBtn" title="Send Message">
                             <i class="fas fa-paper-plane"></i>
                         </button>
+                        <button id="playTTSBtn" title="Play TTS"></button>
                     </div>
                 </div>
             </div>
@@ -296,15 +286,13 @@
         </div>
     </div>
     
-    <div class="footer">
-        <p>If you're experiencing a mental health emergency, please call 988 or text HOME to 741741</p>
-    </div>
-    
     <!-- Debug Panel (hidden in production) -->
     <div id="debugPanel" style="display: none; position: fixed; bottom: 10px; right: 10px; z-index: 1000;">
         <button id="debugAudio" class="debug-btn">Test Audio</button>
     </div>
     
-    <script src="index.js"></script>
+    <script type="module" src="index.js"></script>
+    <script src="speech.js"></script>
+    <script src="features.js"></script>
 </body>
 </html>

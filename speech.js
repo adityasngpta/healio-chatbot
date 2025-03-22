@@ -3,73 +3,53 @@ const synth = window.speechSynthesis;
 let recognition;
 let voices = [];
 
-// Text-to-speech functionality
-function textToSpeech(text) {
-    return new Promise((resolve) => {
-        // Skip empty text
-        if (!text || typeof text !== 'string' || text.trim() === '') {
-            console.warn('Empty text provided to text-to-speech');
-            resolve();
-            return;
-        }
-        
-        // Check for browser support
-        if (!('speechSynthesis' in window)) {
-            console.error('Text-to-speech not supported in this browser.');
-            resolve();
-            return;
-        }
+const OPENAI_AUDIO_API_KEY = "YOUR_OPENAI_AUDIO_API_KEY";
 
-        // Create and configure utterance
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "en-US";
-        utterance.volume = 1;
-        utterance.rate = 1;
-        utterance.pitch = 1;
-        
-        // Set a voice if available
-        if (voices.length > 0) {
-            // Try to find preferred voices
-            const preferredVoices = ['Samantha', 'Google US English', 'Microsoft Zira', 'Google UK English Female'];
-            let selectedVoice = null;
-            
-            for (const name of preferredVoices) {
-                const voice = voices.find(v => v.name.includes(name));
-                if (voice) {
-                    selectedVoice = voice;
-                    break;
-                }
-            }
-            
-            // If no preferred voice found, use the first available one
-            utterance.voice = selectedVoice || voices[0];
-        }
-        
-        // Set up resolution
-        utterance.onend = () => {
-            console.log('Speech synthesis finished');
-            resolve();
-        };
-        
-        utterance.onerror = (event) => {
-            console.error('Speech synthesis error:', event);
-            resolve();
-        };
-        
-        // Reset any ongoing speech before starting new one
-        synth.cancel();
-        
-        // Start speaking
-        synth.speak(utterance);
-        
-        // Safari sometimes doesn't trigger onend, so add a timeout safety
-        setTimeout(() => {
-            if (synth.speaking) {
-                console.warn('Speech synthesis timeout - resolving anyway');
-                resolve();
-            }
-        }, 10000); // 10 seconds timeout
-    });
+// Transcribe audio (speech to text)
+export async function transcribeAudio(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('model', 'gpt-4o-mini-transcribe');
+
+  const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${OPENAI_AUDIO_API_KEY}`
+    },
+    body: formData
+  });
+
+  if (!response.ok) {
+    throw new Error('Transcription failed');
+  }
+
+  const result = await response.json();
+  return result.text;
+}
+
+// Text to speech
+export async function textToSpeech(text) {
+  const response = await fetch('https://api.openai.com/v1/audio/tts', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${OPENAI_AUDIO_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini-tts',
+      text,
+      voice: 'alloy'
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error('TTS request failed');
+  }
+
+  const audioBlob = await response.blob();
+  const audioUrl = URL.createObjectURL(audioBlob);
+  const audio = new Audio(audioUrl);
+  audio.play();
 }
 
 // Initialize speech recognition

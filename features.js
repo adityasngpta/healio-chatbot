@@ -904,4 +904,25 @@ document.addEventListener('DOMContentLoaded', function() {
             input.dispatchEvent(event);
         }
     });
+
+    function renderMarkdown(text) {
+        // Simple Markdown to HTML converter (minimal example)
+        // Replace **...** with <strong>...</strong>, etc.
+        let html = text
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/__(.+?)__/g, '<em>$1</em>')
+            .replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>');
+        return html;
+    }
+
+    // Example usage in your chat message display logic
+    // (Inside wherever you append bot messages):
+    function appendBotMessage(responseText) {
+        const messages = document.getElementById('messages');
+        const messageElement = document.createElement('div');
+        messageElement.className = 'message bot-message';
+        messageElement.innerHTML = renderMarkdown(responseText);
+        messages.appendChild(messageElement);
+        messages.scrollTop = messages.scrollHeight;
+    }
 });
