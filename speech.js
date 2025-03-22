@@ -27,29 +27,15 @@ export async function transcribeAudio(file) {
   return result.text;
 }
 
-// Text to speech
-export async function textToSpeech(text) {
-  const response = await fetch('https://api.openai.com/v1/audio/tts', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${OPENAI_AUDIO_API_KEY}`
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini-tts',
-      text,
-      voice: 'alloy'
-    })
-  });
-
-  if (!response.ok) {
-    throw new Error('TTS request failed');
+// Text to speech using browser API
+export function textToSpeech(text) {
+  if (!('speechSynthesis' in window)) {
+    alert('Text-to-Speech not supported in this browser.');
+    return;
   }
-
-  const audioBlob = await response.blob();
-  const audioUrl = URL.createObjectURL(audioBlob);
-  const audio = new Audio(audioUrl);
-  audio.play();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US';
+  speechSynthesis.speak(utterance);
 }
 
 // Initialize speech recognition
@@ -129,35 +115,44 @@ function setupRecognition(recognition) {
     };
 }
 
-function startSpeechRecognition() {
-    // Initialize if not already done
-    if (!recognition) {
-        initSpeechRecognition();
-        
-        // If still not initialized, show error
-        if (!recognition) {
-            alert('Speech recognition is not supported in your browser. Please try using Chrome or Edge.');
-            return;
-        }
+export function startSpeechRecognition() {
+  if (!('webkitSpeechRecognition' in window)) {
+    const evt = new Event('speechRecognitionEnd');
+    document.dispatchEvent(evt);
+    alert('Speech Recognition not supported in this browser.');
+    return;
+  }
+  const recognition = new webkitSpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = 'en-US';
+
+  recognition.onstart = () => {
+    console.log('Speech recognition started');
+  };
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    const inputField = document.getElementById('input');
+    if (inputField) {
+      inputField.value = transcript;
+      // Optionally auto-send the message:
+      const sendEvent = new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true });
+      inputField.dispatchEvent(sendEvent);
     }
-    
-    try {
-        recognition.start();
-    } catch (error) {
-        console.error('Error starting speech recognition:', error);
-        
-        // If already started, stop and restart
-        if (error.name === 'InvalidStateError') {
-            recognition.stop();
-            setTimeout(() => {
-                try {
-                    recognition.start();
-                } catch (err) {
-                    console.error('Failed to restart speech recognition:', err);
-                }
-            }, 300);
-        }
-    }
+  };
+
+  recognition.onerror = (error) => {
+    console.error('Speech recognition error:', error);
+  };
+
+  recognition.onend = () => {
+    console.log('Speech recognition ended');
+    const evt = new Event('speechRecognitionEnd');
+    document.dispatchEvent(evt);
+  };
+
+  recognition.start();
 }
 
 function endSpeechRecognition() {

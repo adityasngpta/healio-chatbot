@@ -1,5 +1,7 @@
 // Features.js - Additional functionality for He@lio
 
+import { startSpeechRecognition, textToSpeech } from './speech.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements
     const welcomeModal = document.getElementById('welcomeModal');
@@ -7,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const getStartedBtn = document.getElementById('getStartedBtn');
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const voiceInputBtn = document.getElementById('voiceInputBtn');
+    const playTTSBtn = document.getElementById('playTTSBtn');
     const sendBtn = document.getElementById('sendBtn');
     const input = document.getElementById('input');
     
@@ -890,6 +893,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Use new TTS function
+    playTTSBtn.addEventListener('click', () => {
+        const lastBotMsg = document.querySelector('.bot-message:last-child');
+        if (lastBotMsg) {
+            textToSpeech(lastBotMsg.textContent || '');
+        }
+    });
+
     // Add send button functionality
     sendBtn.addEventListener('click', () => {
         if (input.value.trim() !== '') {
