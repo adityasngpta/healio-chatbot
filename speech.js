@@ -3,39 +3,73 @@ const synth = window.speechSynthesis;
 let recognition;
 let voices = [];
 
-const OPENAI_AUDIO_API_KEY = "YOUR_OPENAI_AUDIO_API_KEY";
+// Text-to-speech functionality
+function textToSpeech(text) {
+    return new Promise((resolve) => {
+        // Skip empty text
+        if (!text || typeof text !== 'string' || text.trim() === '') {
+            console.warn('Empty text provided to text-to-speech');
+            resolve();
+            return;
+        }
+        
+        // Check for browser support
+        if (!('speechSynthesis' in window)) {
+            console.error('Text-to-speech not supported in this browser.');
+            resolve();
+            return;
+        }
 
-// Transcribe audio (speech to text)
-export async function transcribeAudio(file) {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('model', 'gpt-4o-mini-transcribe');
-
-  const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${OPENAI_AUDIO_API_KEY}`
-    },
-    body: formData
-  });
-
-  if (!response.ok) {
-    throw new Error('Transcription failed');
-  }
-
-  const result = await response.json();
-  return result.text;
-}
-
-// Text to speech using browser API
-export function textToSpeech(text) {
-  if (!('speechSynthesis' in window)) {
-    alert('Text-to-Speech not supported in this browser.');
-    return;
-  }
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'en-US';
-  speechSynthesis.speak(utterance);
+        // Create and configure utterance
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "en-US";
+        utterance.volume = 1;
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        
+        // Set a voice if available
+        if (voices.length > 0) {
+            // Try to find preferred voices
+            const preferredVoices = ['Samantha', 'Google US English', 'Microsoft Zira', 'Google UK English Female'];
+            let selectedVoice = null;
+            
+            for (const name of preferredVoices) {
+                const voice = voices.find(v => v.name.includes(name));
+                if (voice) {
+                    selectedVoice = voice;
+                    break;
+                }
+            }
+            
+            // If no preferred voice found, use the first available one
+            utterance.voice = selectedVoice || voices[0];
+        }
+        
+        // Set up resolution
+        utterance.onend = () => {
+            console.log('Speech synthesis finished');
+            resolve();
+        };
+        
+        utterance.onerror = (event) => {
+            console.error('Speech synthesis error:', event);
+            resolve();
+        };
+        
+        // Reset any ongoing speech before starting new one
+        synth.cancel();
+        
+        // Start speaking
+        synth.speak(utterance);
+        
+        // Safari sometimes doesn't trigger onend, so add a timeout safety
+        setTimeout(() => {
+            if (synth.speaking) {
+                console.warn('Speech synthesis timeout - resolving anyway');
+                resolve();
+            }
+        }, 10000); // 10 seconds timeout
+    });
 }
 
 // Initialize speech recognition
@@ -115,44 +149,35 @@ function setupRecognition(recognition) {
     };
 }
 
-export function startSpeechRecognition() {
-  if (!('webkitSpeechRecognition' in window)) {
-    const evt = new Event('speechRecognitionEnd');
-    document.dispatchEvent(evt);
-    alert('Speech Recognition not supported in this browser.');
-    return;
-  }
-  const recognition = new webkitSpeechRecognition();
-  recognition.continuous = false;
-  recognition.interimResults = false;
-  recognition.lang = 'en-US';
-
-  recognition.onstart = () => {
-    console.log('Speech recognition started');
-  };
-
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    const inputField = document.getElementById('input');
-    if (inputField) {
-      inputField.value = transcript;
-      // Optionally auto-send the message:
-      const sendEvent = new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true });
-      inputField.dispatchEvent(sendEvent);
+function startSpeechRecognition() {
+    // Initialize if not already done
+    if (!recognition) {
+        initSpeechRecognition();
+        
+        // If still not initialized, show error
+        if (!recognition) {
+            alert('Speech recognition is not supported in your browser. Please try using Chrome or Edge.');
+            return;
+        }
     }
-  };
-
-  recognition.onerror = (error) => {
-    console.error('Speech recognition error:', error);
-  };
-
-  recognition.onend = () => {
-    console.log('Speech recognition ended');
-    const evt = new Event('speechRecognitionEnd');
-    document.dispatchEvent(evt);
-  };
-
-  recognition.start();
+    
+    try {
+        recognition.start();
+    } catch (error) {
+        console.error('Error starting speech recognition:', error);
+        
+        // If already started, stop and restart
+        if (error.name === 'InvalidStateError') {
+            recognition.stop();
+            setTimeout(() => {
+                try {
+                    recognition.start();
+                } catch (err) {
+                    console.error('Failed to restart speech recognition:', err);
+                }
+            }, 300);
+        }
+    }
 }
 
 function endSpeechRecognition() {

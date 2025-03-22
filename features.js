@@ -1,7 +1,5 @@
 // Features.js - Additional functionality for He@lio
 
-import { startSpeechRecognition, textToSpeech } from './speech.js';
-
 document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements
     const welcomeModal = document.getElementById('welcomeModal');
@@ -9,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const getStartedBtn = document.getElementById('getStartedBtn');
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const voiceInputBtn = document.getElementById('voiceInputBtn');
-    const playTTSBtn = document.getElementById('playTTSBtn');
     const sendBtn = document.getElementById('sendBtn');
     const input = document.getElementById('input');
     
@@ -893,14 +890,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Use new TTS function
-    playTTSBtn.addEventListener('click', () => {
-        const lastBotMsg = document.querySelector('.bot-message:last-child');
-        if (lastBotMsg) {
-            textToSpeech(lastBotMsg.textContent || '');
-        }
-    });
-
     // Add send button functionality
     sendBtn.addEventListener('click', () => {
         if (input.value.trim() !== '') {
@@ -915,25 +904,4 @@ document.addEventListener('DOMContentLoaded', function() {
             input.dispatchEvent(event);
         }
     });
-
-    function renderMarkdown(text) {
-        // Simple Markdown to HTML converter (minimal example)
-        // Replace **...** with <strong>...</strong>, etc.
-        let html = text
-            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-            .replace(/__(.+?)__/g, '<em>$1</em>')
-            .replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>');
-        return html;
-    }
-
-    // Example usage in your chat message display logic
-    // (Inside wherever you append bot messages):
-    function appendBotMessage(responseText) {
-        const messages = document.getElementById('messages');
-        const messageElement = document.createElement('div');
-        messageElement.className = 'message bot-message';
-        messageElement.innerHTML = renderMarkdown(responseText);
-        messages.appendChild(messageElement);
-        messages.scrollTop = messages.scrollHeight;
-    }
 });

@@ -4,18 +4,18 @@ let conversationHistory = [];
 const LLM_API_KEY = "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";
 const API_URL = "https://api.openai.com/v1/chat/completions";
 
-const SYSTEM_PROMPT = `You are He@lio, a supportive and empathetic mental health companion for young people. Your responses should be:
-- Warm and conversational, but professional
-- Non-judgmental and validating of emotions
-- Clear and concise (keep responses under 3 sentences when possible)
-- Encouraging but never dismissive of serious concerns
-- Direct users to professional help for serious issues
-- Never give medical advice or try to diagnose
+const SYSTEM_PROMPT = `
+You are He@lio, an empathetic and supportive digital companion dedicated to guiding young people through struggles related to mental health, emotional wellbeing, self-discovery, and life's challenges. Your responses should consistently embody the following principles:
 
-If you sense the user is in crisis, always provide these emergency contacts:
-"If you're having thoughts of self-harm, please know you're not alone. Contact these 24/7 support services:
-- Crisis Text Line: Text HOME to 741741
-- National Suicide Prevention Lifeline: 1-800-273-8255"`;
+Warmth and Empathy: Adopt a compassionate, approachable, and conversational tone, clearly showing genuine care and understanding.
+Non-Judgmental Validation: Create a safe, accepting environment by consistently affirming users' emotions, thoughts, and experiences without judgment.
+Encouraging and Empowering: Offer optimism, gentle reassurance, practical tools, coping strategies, and resources when appropriate. Always encourage users toward seeking help from trusted adults or mental health professionals for serious concerns.
+Professional yet Approachable: Balance professional insights derived from psychological principles with approachable, relatable language appropriate for youth.
+Concise and Clear: Prioritize clarity and precision by keeping your responses concise and focused (ideally under 5 sentences); avoid overwhelming users with lengthy explanations.
+Sensitivity and Awareness: Show sensitivity to cultural backgrounds, gender identities, orientations, disabilities, and other individual experiences, ensuring inclusivity and respectful language at all times.
+Safety Emphasis: Regularly remind users of the importance of speaking with trusted people or mental health professionals and gently provide crisis resources if users indicate immediate or serious distress.
+Your ultimate goal is to create a comforting environment where young people feel heard, supported, and gently guided toward improved emotional wellbeing.
+`;
 
 // Audio feedback settings
 let audioEnabled = true; // Can be toggled by user
@@ -52,18 +52,23 @@ async function* streamResponse(response) {
 
 async function getLLMResponse(input) {
   try {
-    // Ensure we have a system prompt at the start
-    if (!conversationHistory.some(m => m.role === 'system')) {
-      conversationHistory.unshift({
-        role: "system",
-        content: "You are He@lio, a virtual mental health companion for young people. Respond empathetically and helpfully, using simple language and focusing on emotional support. Present your responses in valid Markdown formatting."
-      });
-    }
-
     // Add user message to history
     conversationHistory.push({
       role: "user",
       content: input
+    });
+
+    // Insert a more detailed system prompt at the start
+    const systemPrompt = `
+    You are a caring, empathetic mental health companion focused on helping youth 
+    navigate stress, anxiety, and school-related challenges. Offer non-judgmental 
+    support, helpful suggestions, and understanding Encourage healthy coping strategies and 
+    self-care.Respond with kindness and positivity. Use a gentle tone and help the user feel safe. 
+    `;
+
+    conversationHistory.unshift({
+      role: "system",
+      content: systemPrompt
     });
 
     const response = await fetch(API_URL, {
@@ -73,7 +78,7 @@ async function getLLMResponse(input) {
         'Authorization': `Bearer ${LLM_API_KEY}`
       },
       body: JSON.stringify({
-        model: "gpt-4.5-preview",
+        model: "gpt-4o",
         messages: conversationHistory,
         stream: true
       })
@@ -83,13 +88,27 @@ async function getLLMResponse(input) {
       throw new Error('API request failed');
     }
 
+    // Helper to convert basic Markdown to HTML
+    function formatMarkdown(text) {
+        return text
+          .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+          .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+          .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+          .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+          .replace(/`([^`]+)`/gim, '<code>$1</code>')
+          .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank">$1</a>')
+          .replace(/\n/g, '<br/>');
+    }
+
     let fullResponse = '';
     const botText = addChat(input, "");
 
     // Stream the response
     for await (const chunk of streamResponse(response)) {
       fullResponse += chunk;
-      botText.innerText = fullResponse;
+      // Render Markdown instead of plain text
+      botText.innerHTML = formatMarkdown(fullResponse);
       // Scroll to bottom as text streams in
       const messagesContainer = document.getElementById("messages");
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
