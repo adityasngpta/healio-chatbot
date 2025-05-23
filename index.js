@@ -78,7 +78,7 @@ async function getLLMResponse(input) {
         'Authorization': `Bearer ${LLM_API_KEY}`
       },
       body: JSON.stringify({
-        model: "gpt-4o",
+        model: "gpt-4.1",
         messages: conversationHistory,
         stream: true
       })
