@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const resourcesBtn = document.getElementById('resourcesBtn');
     const activitiesBtn = document.getElementById('activitiesBtn');
     const goalsBtn = document.getElementById('goalsBtn');
+    const affirmationsBtn = document.getElementById('affirmationsBtn');
+    const studyBtn = document.getElementById('studyBtn');
     const sections = document.querySelectorAll('.section');
     
     // Journal Elements
@@ -54,6 +56,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const generateGoalsBtn = document.getElementById('generateGoalsBtn');
     const goalSuggestions = document.getElementById('goalSuggestions');
     const goalGenerationStatus = document.getElementById('goalGenerationStatus');
+
+    // Affirmation Elements
+    const generateAffirmationBtn = document.getElementById('generateAffirmationBtn');
+    const affirmationDisplay = document.getElementById('affirmationDisplay');
+
+    // Study Buddy Elements
+    const askStudyBtn = document.getElementById('askStudyBtn');
+    const studyQuestion = document.getElementById('studyQuestion');
+    const studyResponse = document.getElementById('studyResponse');
+
+    const FEATURES_API_URL = "https://api.openai.com/v1/chat/completions";
+    const FEATURES_API_KEY = "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";
+
+    async function callFeatureLLM(messages) {
+        const response = await fetch(FEATURES_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${FEATURES_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'gpt-4-turbo',
+                messages
+            })
+        });
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content?.trim() || '';
+    }
     
     // Mood tracking
     const moodOptions = document.querySelectorAll('.mood');
@@ -125,6 +155,8 @@ document.addEventListener('DOMContentLoaded', function() {
         setActiveSection('goals');
         displayGoals();
     });
+    affirmationsBtn.addEventListener('click', () => setActiveSection('affirmations'));
+    studyBtn.addEventListener('click', () => setActiveSection('study'));
     
     // 4. Journal Functionality
     function updateJournalDate() {
@@ -865,7 +897,36 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update the goal list display
         displayGoals();
     }
-    
+
+    // 12.5 Affirmations
+    async function generateAffirmation() {
+        affirmationDisplay.textContent = 'Generating...';
+        const text = await callFeatureLLM([
+            { role: 'system', content: 'You create short, uplifting affirmations for teenagers.' },
+            { role: 'user', content: 'Give me one positive affirmation.' }
+        ]);
+        affirmationDisplay.textContent = text || 'Sorry, something went wrong.';
+    }
+
+    generateAffirmationBtn.addEventListener('click', generateAffirmation);
+
+    // 12.6 Study Buddy
+    async function handleStudyQuestion() {
+        const question = studyQuestion.value.trim();
+        if (!question) {
+            alert('Please enter a question.');
+            return;
+        }
+        studyResponse.textContent = 'Thinking...';
+        const answer = await callFeatureLLM([
+            { role: 'system', content: 'You help students with concise study tips and explanations.' },
+            { role: 'user', content: question }
+        ]);
+        studyResponse.textContent = answer || 'Sorry, I could not find an answer.';
+    }
+
+    askStudyBtn.addEventListener('click', handleStudyQuestion);
+
     // 13. Voice Input Integration
     voiceInputBtn.addEventListener('click', () => {
         // Check if speech recognition is defined in speech.js
